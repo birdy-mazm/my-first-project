@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>채움 — 배움으로 나를 채우다</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F8F6F0;
+      --surface: #FFFFFF;
+      --accent: #F29B2F;
+      --accent-light: #FEF0D9;
+      --accent-dark: #D9831A;
+      --text: #1C1917;
+      --text-sub: #78716C;
+      --border: #E7E2D8;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.07);
+
+      --color-기사: #3B82F6;
+      --color-영상: #EF4444;
+      --color-책: #22C55E;
+      --color-팟캐스트: #A855F7;
+      --color-기타: #9CA3AF;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px 16px 60px;
+    }
+
+    .container { max-width: 640px; margin: 0 auto; }
+
+    /* ── Header ── */
+    header { text-align: center; padding: 40px 0 28px; }
+    header .logo {
+      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    }
+    header .logo-icon {
+      width: 44px; height: 44px; background: var(--accent);
+      border-radius: 12px; display: flex; align-items: center;
+      justify-content: center; font-size: 22px;
+    }
+    header h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
+    header p  { font-size: 14px; color: var(--text-sub); }
+
+    /* ── Form Card ── */
+    .form-card {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 28px 24px; box-shadow: var(--shadow); margin-bottom: 20px;
+    }
+    .form-title {
+      font-size: 15px; font-weight: 600; color: var(--text-sub);
+      margin-bottom: 20px; display: flex; align-items: center; gap: 6px;
+    }
+    .form-title::before {
+      content: ''; display: inline-block; width: 4px; height: 16px;
+      background: var(--accent); border-radius: 2px;
+    }
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block; font-size: 13px; font-weight: 600;
+      color: var(--text-sub); margin-bottom: 6px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 14px; color: var(--text);
+      background: var(--bg); outline: none;
+      transition: border-color .2s, background .2s;
+      -webkit-appearance: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--accent); background: #fff;
+    }
+    .field input::placeholder, .field textarea::placeholder { color: #B8B1A8; }
+    .field textarea { resize: none; height: 72px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ── Star Rating ── */
+    .star-group { display: flex; gap: 6px; }
+    .star-group .star {
+      font-size: 28px; cursor: pointer; color: #D9D3CB;
+      transition: color .15s, transform .1s; line-height: 1; user-select: none;
+    }
+    .star-group .star.active { color: var(--accent); }
+    .star-group .star:hover  { transform: scale(1.15); }
+
+    /* ── Submit Button ── */
+    .btn-submit {
+      width: 100%; padding: 14px; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius-sm); font-family: inherit;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: background .2s, transform .1s; margin-top: 4px;
+    }
+    .btn-submit:hover  { background: var(--accent-dark); }
+    .btn-submit:active { transform: scale(0.98); }
+
+    /* ── Stats Dashboard ── */
+    .dash-card {
+      background: var(--surface); border-radius: var(--radius);
+      box-shadow: var(--shadow); margin-bottom: 20px; overflow: hidden;
+    }
+    .dash-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; cursor: pointer; user-select: none;
+    }
+    .dash-header:hover { background: #FDFCF9; }
+    .dash-header-left {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 15px; font-weight: 700;
+    }
+    .dash-toggle {
+      font-size: 16px; color: var(--text-sub);
+      transition: transform .25s; line-height: 1;
+    }
+    .dash-toggle.open { transform: rotate(180deg); }
+    .dash-body { padding: 0 20px 20px; display: none; }
+    .dash-body.open { display: block; }
+
+    /* Summary row */
+    .dash-summary {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      margin-bottom: 4px;
+    }
+    .dash-stat {
+      background: var(--bg); border-radius: var(--radius-sm);
+      padding: 14px 10px; text-align: center;
+    }
+    .dash-stat .ds-value {
+      font-size: 26px; font-weight: 700; color: var(--accent-dark);
+      line-height: 1; margin-bottom: 5px;
+    }
+    .dash-stat .ds-label { font-size: 11px; color: var(--text-sub); font-weight: 500; }
+
+    /* Section title */
+    .dash-section { margin-top: 20px; }
+    .dash-section-title {
+      font-size: 11px; font-weight: 700; color: var(--text-sub);
+      text-transform: uppercase; letter-spacing: .6px; margin-bottom: 10px;
+    }
+
+    /* Type bar chart */
+    .type-bars { display: flex; flex-direction: column; gap: 9px; }
+    .type-bar-row { display: flex; align-items: center; gap: 10px; }
+    .type-bar-label { font-size: 12px; color: var(--text-sub); width: 68px; flex-shrink: 0; }
+    .type-bar-track {
+      flex: 1; height: 9px; background: var(--bg);
+      border-radius: 999px; overflow: hidden;
+    }
+    .type-bar-fill {
+      height: 100%; border-radius: 999px;
+      transition: width .6s cubic-bezier(.22,1,.36,1);
+    }
+    .type-bar-count {
+      font-size: 12px; font-weight: 600; color: var(--text-sub);
+      width: 20px; text-align: right; flex-shrink: 0;
+    }
+
+    /* Tag TOP 5 */
+    .tag-top-list { display: flex; flex-wrap: wrap; gap: 7px; }
+    .tag-top-item {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 999px; padding: 4px 12px; font-size: 12px; color: var(--text-sub);
+    }
+    .tag-top-item .tc {
+      background: var(--accent); color: #fff; border-radius: 999px;
+      font-size: 10px; font-weight: 700; min-width: 16px; height: 16px;
+      display: inline-flex; align-items: center; justify-content: center; padding: 0 4px;
+    }
+
+    /* 7-day bar chart */
+    .week-chart {
+      display: flex; align-items: flex-end; gap: 5px; height: 64px;
+    }
+    .week-col {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 5px; height: 100%;
+    }
+    .week-bar-wrap {
+      flex: 1; display: flex; align-items: flex-end; width: 100%;
+    }
+    .week-bar {
+      width: 100%; border-radius: 4px 4px 0 0;
+      background: var(--accent); min-height: 3px;
+      transition: height .5s cubic-bezier(.22,1,.36,1);
+    }
+    .week-bar.today-bar { background: var(--accent-dark); }
+    .week-bar.zero-bar  { background: var(--border); min-height: 3px; }
+    .week-day { font-size: 10px; color: var(--text-sub); font-weight: 500; }
+    .week-day.today-label { color: var(--accent-dark); font-weight: 700; }
+
+    /* ── Controls: Search + Sort ── */
+    .control-bar {
+      display: flex; gap: 10px; align-items: center; margin-bottom: 14px;
+    }
+    .search-wrap { flex: 1; position: relative; }
+    .search-icon {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      color: #B8B1A8; font-size: 14px; pointer-events: none;
+    }
+    .search-input {
+      width: 100%; padding: 10px 14px 10px 36px;
+      border: 1.5px solid var(--border); border-radius: 999px;
+      font-family: inherit; font-size: 14px; color: var(--text);
+      background: var(--surface); outline: none;
+      transition: border-color .2s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: #B8B1A8; }
+    .sort-select {
+      padding: 10px 14px; border: 1.5px solid var(--border);
+      border-radius: 999px; font-family: inherit; font-size: 13px;
+      font-weight: 500; color: var(--text); background: var(--surface);
+      outline: none; cursor: pointer; -webkit-appearance: none;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .sort-select:focus { border-color: var(--accent); }
+
+    /* ── Filter Pills ── */
+    .filter-pills {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .filter-pill {
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 999px; padding: 7px 16px; font-size: 13px;
+      font-weight: 600; color: var(--text-sub);
+      cursor: pointer; transition: all .18s; white-space: nowrap;
+      font-family: inherit;
+    }
+    .filter-pill.active {
+      background: var(--accent); border-color: var(--accent); color: #fff;
+    }
+    .filter-pill:not(.active):hover {
+      border-color: var(--accent); color: var(--accent-dark);
+      background: var(--accent-light);
+    }
+
+    /* ── List Header ── */
+    .list-header {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 14px;
+    }
+    .list-title { font-size: 16px; font-weight: 700; }
+    .list-count  { font-size: 13px; color: var(--text-sub); }
+
+    /* ── Empty State ── */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-sub); }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; line-height: 1.7; }
+
+    /* ── Record Cards ── */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .record-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .record-card {
+      background: var(--surface); border-radius: var(--radius);
+      padding: 18px 18px 18px 26px; box-shadow: var(--shadow);
+      position: relative; overflow: hidden;
+      transition: box-shadow .2s;
+      animation: slideIn .3s cubic-bezier(.22,1,.36,1) both;
+    }
+    .record-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.10); }
+
+    .record-card::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+      border-radius: var(--radius) 0 0 var(--radius);
+      background: var(--type-color, #9CA3AF);
+    }
+    .record-card[data-type="기사"]     { --type-color: var(--color-기사); }
+    .record-card[data-type="영상"]     { --type-color: var(--color-영상); }
+    .record-card[data-type="책"]       { --type-color: var(--color-책); }
+    .record-card[data-type="팟캐스트"] { --type-color: var(--color-팟캐스트); }
+    .record-card[data-type="기타"]     { --type-color: var(--color-기타); }
+
+    .record-top {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 10px; margin-bottom: 8px;
+    }
+    .record-type-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--accent-light); color: var(--accent-dark);
+      border-radius: 999px; padding: 3px 10px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
+    }
+    .record-stars { font-size: 13px; color: var(--accent); letter-spacing: 1px; white-space: nowrap; }
+    .record-title { font-size: 15px; font-weight: 700; line-height: 1.4; margin-bottom: 6px; }
+    .record-link {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 12px; font-weight: 600; color: var(--accent-dark);
+      text-decoration: none; background: var(--accent-light);
+      border-radius: 999px; padding: 3px 10px; margin-bottom: 10px;
+      transition: background .15s;
+    }
+    .record-link:hover { background: #FDDFA8; }
+    .record-review {
+      font-size: 13px; color: var(--text-sub); line-height: 1.6; margin-bottom: 10px;
+    }
+    .record-footer {
+      display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .record-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+    .tag {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 999px; padding: 2px 9px;
+      font-size: 12px; color: var(--text-sub);
+    }
+    .record-date { font-size: 12px; color: #B8B1A8; white-space: nowrap; }
+    .btn-delete {
+      position: absolute; top: 13px; right: 13px;
+      background: none; border: none; cursor: pointer;
+      color: #C8C2BB; font-size: 15px; line-height: 1;
+      padding: 4px 6px; border-radius: 6px;
+      transition: color .2s, background .2s; display: none;
+    }
+    .record-card:hover .btn-delete { display: block; }
+    .btn-delete:hover { color: #E53E3E; background: #FEF2F2; }
+
+    /* ── Data Management Bar ── */
+    .data-bar {
+      display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 20px;
+    }
+    .btn-data {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 8px 14px; border-radius: 999px; font-family: inherit;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: all .18s; white-space: nowrap; border: 1.5px solid var(--border);
+      background: var(--surface); color: var(--text-sub);
+    }
+    .btn-data:hover         { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-light); }
+    .btn-data.btn-clear:hover { border-color: #EF4444; color: #EF4444; background: #FEF2F2; }
+
+    /* ── Confirm Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.38);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: #fff; border-radius: var(--radius); padding: 28px 24px;
+      max-width: 320px; width: calc(100% - 40px);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      transform: translateY(12px); transition: transform .25s;
+    }
+    .modal-overlay.show .modal-box { transform: translateY(0); }
+    .modal-icon  { font-size: 32px; margin-bottom: 10px; }
+    .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .modal-desc  { font-size: 13px; color: var(--text-sub); line-height: 1.7; margin-bottom: 22px; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .btn-modal-cancel {
+      padding: 9px 18px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border); background: var(--surface);
+      font-family: inherit; font-size: 13px; font-weight: 600;
+      color: var(--text-sub); cursor: pointer; transition: all .15s;
+    }
+    .btn-modal-cancel:hover { border-color: var(--accent); color: var(--accent-dark); }
+    .btn-modal-confirm {
+      padding: 9px 18px; border-radius: var(--radius-sm);
+      border: none; background: #EF4444; color: #fff;
+      font-family: inherit; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: background .15s;
+    }
+    .btn-modal-confirm:hover { background: #DC2626; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #1C1917; color: #fff;
+      padding: 12px 22px; border-radius: 999px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+      z-index: 999; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .field-row { grid-template-columns: 1fr; }
+      header h1  { font-size: 26px; }
+      .form-card { padding: 20px 16px; }
+      .dash-summary { grid-template-columns: 1fr 1fr; }
+      .control-bar { flex-wrap: wrap; }
+      .sort-select { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📚</div>
+      <h1>채움</h1>
+    </div>
+    <p>배움으로 나를 채우다</p>
+  </header>
+
+  <!-- Input Form -->
+  <div class="form-card">
+    <div class="form-title">새 학습 기록</div>
+
+    <div class="field">
+      <label>콘텐츠 제목 *</label>
+      <input type="text" id="inputTitle" placeholder="어떤 콘텐츠를 학습했나요?" />
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>유형</label>
+        <select id="inputType">
+          <option value="기사">📰 기사</option>
+          <option value="영상">🎬 영상</option>
+          <option value="책">📖 책</option>
+          <option value="팟캐스트">🎙️ 팟캐스트</option>
+          <option value="기타">📝 기타</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>별점</label>
+        <div class="star-group" id="starGroup">
+          <span class="star" data-val="1">★</span>
+          <span class="star" data-val="2">★</span>
+          <span class="star" data-val="3">★</span>
+          <span class="star" data-val="4">★</span>
+          <span class="star" data-val="5">★</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>URL 링크 <span style="color:#B8B1A8;font-weight:400">(선택)</span></label>
+      <input type="url" id="inputUrl" placeholder="https://..." />
+    </div>
+
+    <div class="field">
+      <label>한줄평</label>
+      <textarea id="inputReview" placeholder="인상 깊었던 점이나 느낀 점을 자유롭게 써주세요."></textarea>
+    </div>
+
+    <div class="field">
+      <label>태그 <span style="color:#B8B1A8;font-weight:400">(쉼표로 구분, 예: AI, 생산성)</span></label>
+      <input type="text" id="inputTags" placeholder="AI, 프롬프트, 생산성" />
+    </div>
+
+    <button class="btn-submit" id="btnSubmit">기록하기</button>
+  </div>
+
+  <!-- Data Management -->
+  <div class="data-bar">
+    <button class="btn-data" id="btnExport">⬇ 내보내기</button>
+    <label  class="btn-data" id="btnImportLabel">⬆ 가져오기
+      <input type="file" id="importFile" accept=".json" style="display:none" />
+    </label>
+    <button class="btn-data btn-clear" id="btnClear">🗑 전체 삭제</button>
+  </div>
+
+  <!-- Stats Dashboard -->
+  <div class="dash-card" id="dashCard">
+    <div class="dash-header" id="dashToggleBtn">
+      <div class="dash-header-left">📊 학습 통계</div>
+      <span class="dash-toggle" id="dashToggleIcon">▼</span>
+    </div>
+    <div class="dash-body" id="dashBody">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="control-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="제목, 한줄평, 태그 검색" />
+    </div>
+    <select class="sort-select" id="sortSelect">
+      <option value="newest">최신순</option>
+      <option value="oldest">오래된순</option>
+      <option value="stars">별점 높은순</option>
+    </select>
+  </div>
+
+  <!-- Filter Pills -->
+  <div class="filter-pills" id="filterPills"></div>
+
+  <!-- List Header -->
+  <div class="list-header">
+    <span class="list-title">학습 기록</span>
+    <span class="list-count" id="listCount">전체 0개의 기록</span>
+  </div>
+
+  <!-- Record List -->
+  <div id="recordList"></div>
+
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-icon">🗑️</div>
+    <div class="modal-title">전체 삭제</div>
+    <div class="modal-desc">모든 학습 기록이 삭제됩니다.<br>이 작업은 되돌릴 수 없어요.</div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" id="modalCancel">취소</button>
+      <button class="btn-modal-confirm" id="modalConfirm">모두 삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ─────────────────────────────────────────
+     Constants & State
+  ───────────────────────────────────────── */
+  const TYPE_ICONS = { 기사:'📰', 영상:'🎬', 책:'📖', 팟캐스트:'🎙️', 기타:'📝' };
+  const TYPE_COLORS = {
+    기사: '#3B82F6', 영상: '#EF4444', 책: '#22C55E', 팟캐스트: '#A855F7', 기타: '#9CA3AF'
+  };
+  const DAY_LABELS = ['일','월','화','수','목','금','토'];
+  const STORAGE_KEY = 'chaeum_records';
+
+  let records     = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  let selectedStar = 0;
+  let filterType  = 'all';
+  let searchQuery = '';
+  let sortOrder   = 'newest';
+  let dashOpen    = false;
+
+  /* ─────────────────────────────────────────
+     Star Rating (input form)
+  ───────────────────────────────────────── */
+  const formStars = document.querySelectorAll('#starGroup .star');
+  function setStars(val) {
+    selectedStar = val;
+    formStars.forEach(s => s.classList.toggle('active', +s.dataset.val <= val));
+  }
+  formStars.forEach(s => {
+    s.addEventListener('click',      () => setStars(+s.dataset.val));
+    s.addEventListener('mouseenter', () =>
+      formStars.forEach(x => x.classList.toggle('active', +x.dataset.val <= +s.dataset.val))
+    );
+  });
+  document.getElementById('starGroup').addEventListener('mouseleave', () => setStars(selectedStar));
+
+  /* ─────────────────────────────────────────
+     Submit
+  ───────────────────────────────────────── */
+  document.getElementById('btnSubmit').addEventListener('click', () => {
+    const title = document.getElementById('inputTitle').value.trim();
+    if (!title) { showToast('⚠️ 콘텐츠 제목을 입력해주세요.'); return; }
+
+    const now = new Date();
+    records.unshift({
+      id:     now.getTime(),
+      title,
+      type:   document.getElementById('inputType').value,
+      url:    document.getElementById('inputUrl').value.trim(),
+      review: document.getElementById('inputReview').value.trim(),
+      tags:   document.getElementById('inputTags').value.trim()
+                .split(',').map(t => t.trim()).filter(Boolean),
+      stars:  selectedStar,
+      date:   now.toLocaleDateString('ko-KR', { year:'numeric', month:'short', day:'numeric' }),
+      time:   now.toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' })
+    });
+    save();
+    render();
+    renderDashboard();
+    resetForm();
+    showToast('✅ 기록이 저장되었어요!');
+  });
+
+  function resetForm() {
+    document.getElementById('inputTitle').value  = '';
+    document.getElementById('inputUrl').value    = '';
+    document.getElementById('inputReview').value = '';
+    document.getElementById('inputTags').value   = '';
+    document.getElementById('inputType').value   = '기사';
+    setStars(0);
+  }
+
+  /* ─────────────────────────────────────────
+     Search & Sort listeners
+  ───────────────────────────────────────── */
+  document.getElementById('searchInput').addEventListener('input', e => {
+    searchQuery = e.target.value.trim().toLowerCase();
+    render();
+  });
+  document.getElementById('sortSelect').addEventListener('change', e => {
+    sortOrder = e.target.value;
+    render();
+  });
+
+  /* ─────────────────────────────────────────
+     Dashboard toggle
+  ───────────────────────────────────────── */
+  document.getElementById('dashToggleBtn').addEventListener('click', () => {
+    dashOpen = !dashOpen;
+    document.getElementById('dashBody').classList.toggle('open', dashOpen);
+    document.getElementById('dashToggleIcon').classList.toggle('open', dashOpen);
+    if (dashOpen) renderDashboard();
+  });
+
+  /* ─────────────────────────────────────────
+     Computed: filter + sort
+  ───────────────────────────────────────── */
+  function getFiltered() {
+    let arr = records.slice();
+
+    // type filter
+    if (filterType !== 'all') arr = arr.filter(r => r.type === filterType);
+
+    // search
+    if (searchQuery) {
+      arr = arr.filter(r =>
+        r.title.toLowerCase().includes(searchQuery) ||
+        (r.review && r.review.toLowerCase().includes(searchQuery)) ||
+        r.tags.some(t => t.toLowerCase().includes(searchQuery))
+      );
+    }
+
+    // sort
+    if (sortOrder === 'oldest') arr.sort((a,b) => a.id - b.id);
+    else if (sortOrder === 'stars') arr.sort((a,b) => (b.stars||0) - (a.stars||0) || b.id - a.id);
+    else arr.sort((a,b) => b.id - a.id); // newest
+
+    return arr;
+  }
+
+  /* ─────────────────────────────────────────
+     Render: filter pills
+  ───────────────────────────────────────── */
+  function renderFilterPills() {
+    const counts = {};
+    records.forEach(r => { counts[r.type] = (counts[r.type]||0) + 1; });
+
+    const bar = document.getElementById('filterPills');
+    const types = Object.keys(TYPE_ICONS);
+
+    let html = `<button class="filter-pill ${filterType==='all'?'active':''}" data-type="all">전체 ${records.length}</button>`;
+    types.forEach(t => {
+      if (!counts[t]) return;
+      html += `<button class="filter-pill ${filterType===t?'active':''}" data-type="${t}">${TYPE_ICONS[t]} ${t} ${counts[t]}</button>`;
+    });
+    bar.innerHTML = html;
+
+    bar.querySelectorAll('.filter-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterType = btn.dataset.type;
+        render();
+      });
+    });
+  }
+
+  /* ─────────────────────────────────────────
+     Render: record list
+  ───────────────────────────────────────── */
+  function render() {
+    renderFilterPills();
+
+    const filtered = getFiltered();
+    const countEl  = document.getElementById('listCount');
+    countEl.textContent = `전체 ${records.length}개의 기록`;
+
+    const list = document.getElementById('recordList');
+
+    if (filtered.length === 0) {
+      const isSearch = !!searchQuery;
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">${isSearch ? '🔍' : '📚'}</div>
+          <p>${isSearch
+            ? `"${escHtml(searchQuery)}"에 대한 검색 결과가 없습니다.`
+            : '아직 기록이 없어요.<br>오늘 배운 것을 채워보세요! 📚'}</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = '';
+    filtered.forEach(r => {
+      const card = document.createElement('div');
+      card.className   = 'record-card';
+      card.dataset.type = r.type;
+
+      const starsStr = r.stars
+        ? '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars)
+        : '☆☆☆☆☆';
+      const tagsHTML = r.tags.length
+        ? r.tags.map(t => `<span class="tag">${escHtml(t)}</span>`).join('')
+        : '';
+      const datetime = r.time ? `${r.date} ${r.time}` : r.date;
+
+      card.innerHTML = `
+        <button class="btn-delete" title="삭제">✕</button>
+        <div class="record-top">
+          <span class="record-type-badge">${TYPE_ICONS[r.type]||'📝'} ${escHtml(r.type)}</span>
+          <span class="record-stars">${starsStr}</span>
+        </div>
+        <div class="record-title">${escHtml(r.title)}</div>
+        ${r.url ? `<a class="record-link" href="${escHtml(r.url)}" target="_blank" rel="noopener">🔗 원문 보기</a>` : ''}
+        ${r.review ? `<div class="record-review">${escHtml(r.review)}</div>` : ''}
+        <div class="record-footer">
+          <div class="record-tags">${tagsHTML}</div>
+          <span class="record-date">${datetime}</span>
+        </div>`;
+
+      card.querySelector('.btn-delete').addEventListener('click', () => deleteRecord(r.id));
+      list.appendChild(card);
+    });
+  }
+
+  /* ─────────────────────────────────────────
+     Render: dashboard
+  ───────────────────────────────────────── */
+  function renderDashboard() {
+    const body = document.getElementById('dashBody');
+    if (!dashOpen) return;
+
+    /* ── 이번 주 계산 ── */
+    const now = new Date();
+    const dow = now.getDay();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+    monday.setHours(0,0,0,0);
+    const thisWeek = records.filter(r => r.id >= monday.getTime()).length;
+
+    /* ── 별점 평균 ── */
+    const ratedRecords = records.filter(r => r.stars > 0);
+    const avgStar = ratedRecords.length
+      ? (ratedRecords.reduce((s,r) => s + r.stars, 0) / ratedRecords.length).toFixed(1)
+      : '-';
+
+    /* ── 유형별 카운트 ── */
+    const typeCounts = {};
+    Object.keys(TYPE_ICONS).forEach(t => { typeCounts[t] = 0; });
+    records.forEach(r => { typeCounts[r.type] = (typeCounts[r.type]||0) + 1; });
+    const maxTypeCount = Math.max(...Object.values(typeCounts), 1);
+
+    /* ── 태그 TOP 5 ── */
+    const tagMap = {};
+    records.forEach(r => r.tags.forEach(t => { tagMap[t] = (tagMap[t]||0) + 1; }));
+    const topTags = Object.entries(tagMap)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, 5);
+
+    /* ── 최근 7일 ── */
+    const today = new Date(); today.setHours(0,0,0,0);
+    const weekDays = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today); d.setDate(today.getDate() - i);
+      const cnt = records.filter(r => {
+        const rd = new Date(r.id); rd.setHours(0,0,0,0);
+        return rd.getTime() === d.getTime();
+      }).length;
+      weekDays.push({ d, cnt, isToday: i === 0 });
+    }
+    const maxDay = Math.max(...weekDays.map(d => d.cnt), 1);
+
+    /* ── HTML 조립 ── */
+    const typeBarsHTML = Object.entries(typeCounts)
+      .filter(([,v]) => v > 0)
+      .map(([t,v]) => `
+        <div class="type-bar-row">
+          <span class="type-bar-label">${TYPE_ICONS[t]} ${t}</span>
+          <div class="type-bar-track">
+            <div class="type-bar-fill" style="width:${(v/maxTypeCount*100).toFixed(1)}%;background:${TYPE_COLORS[t]}"></div>
+          </div>
+          <span class="type-bar-count">${v}</span>
+        </div>`).join('');
+
+    const topTagsHTML = topTags.length
+      ? topTags.map(([t,c]) => `
+          <span class="tag-top-item">${escHtml(t)}<span class="tc">${c}</span></span>`).join('')
+      : '<span style="font-size:13px;color:var(--text-sub)">아직 태그가 없어요.</span>';
+
+    const weekChartHTML = weekDays.map(({ d, cnt, isToday }) => `
+      <div class="week-col">
+        <div class="week-bar-wrap">
+          <div class="week-bar ${isToday?'today-bar':''} ${cnt===0?'zero-bar':''}"
+               style="height:${(cnt/maxDay*100).toFixed(1)}%"></div>
+        </div>
+        <span class="week-day ${isToday?'today-label':''}">${DAY_LABELS[d.getDay()]}</span>
+      </div>`).join('');
+
+    body.innerHTML = `
+      <div class="dash-summary">
+        <div class="dash-stat">
+          <div class="ds-value">${records.length}</div>
+          <div class="ds-label">총 기록</div>
+        </div>
+        <div class="dash-stat">
+          <div class="ds-value">${thisWeek}</div>
+          <div class="ds-label">이번 주</div>
+        </div>
+        <div class="dash-stat">
+          <div class="ds-value">${avgStar}${avgStar !== '-' ? ' ★' : ''}</div>
+          <div class="ds-label">별점 평균</div>
+        </div>
+      </div>
+
+      <div class="dash-section">
+        <div class="dash-section-title">유형별 비율</div>
+        <div class="type-bars">${typeBarsHTML || '<span style="font-size:13px;color:var(--text-sub)">기록이 없어요.</span>'}</div>
+      </div>
+
+      <div class="dash-section">
+        <div class="dash-section-title">많이 사용한 태그 TOP 5</div>
+        <div class="tag-top-list">${topTagsHTML}</div>
+      </div>
+
+      <div class="dash-section">
+        <div class="dash-section-title">최근 7일 기록</div>
+        <div class="week-chart">${weekChartHTML}</div>
+      </div>`;
+  }
+
+  /* ─────────────────────────────────────────
+     Delete
+  ───────────────────────────────────────── */
+  function deleteRecord(id) {
+    records = records.filter(r => r.id !== id);
+    save();
+    render();
+    if (dashOpen) renderDashboard();
+    showToast('🗑️ 기록이 삭제되었어요.');
+  }
+
+  /* ─────────────────────────────────────────
+     Data Management
+  ───────────────────────────────────────── */
+
+  /* 내보내기 */
+  document.getElementById('btnExport').addEventListener('click', () => {
+    if (!records.length) { showToast('내보낼 기록이 없어요.'); return; }
+    const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `chaeum_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`⬇ ${records.length}개 기록을 내보냈어요.`);
+  });
+
+  /* 가져오기 */
+  document.getElementById('importFile').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!Array.isArray(data)) throw new Error();
+        if (!data.every(r => r.id && r.title && r.type)) throw new Error();
+        records = data;
+        save();
+        render();
+        if (dashOpen) renderDashboard();
+        showToast(`✅ ${records.length}개 기록을 가져왔어요!`);
+      } catch {
+        showToast('⚠️ 올바른 채움 JSON 파일이 아니에요.');
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  /* 전체 삭제 */
+  document.getElementById('btnClear').addEventListener('click', () => {
+    if (!records.length) { showToast('삭제할 기록이 없어요.'); return; }
+    document.getElementById('confirmModal').classList.add('show');
+  });
+  document.getElementById('modalCancel').addEventListener('click', () => {
+    document.getElementById('confirmModal').classList.remove('show');
+  });
+  document.getElementById('modalConfirm').addEventListener('click', () => {
+    records = [];
+    save();
+    render();
+    if (dashOpen) renderDashboard();
+    document.getElementById('confirmModal').classList.remove('show');
+    showToast('🗑️ 모든 기록이 삭제되었어요.');
+  });
+  document.getElementById('confirmModal').addEventListener('click', e => {
+    if (e.target === e.currentTarget)
+      document.getElementById('confirmModal').classList.remove('show');
+  });
+
+  /* ─────────────────────────────────────────
+     Utils
+  ───────────────────────────────────────── */
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  /* ─────────────────────────────────────────
+     Init
+  ───────────────────────────────────────── */
+  render();
+</script>
+</body>
+</html>
